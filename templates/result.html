@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Validation Result — BookLeaf</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:      #1a1a1a;
+      --paper:    #faf8f4;
+      --cream:    #f0ebe0;
+      --red:      #c0392b;
+      --muted:    #6b6560;
+      --border:   #ddd8ce;
+      --pass-fg:   #166534;
+      --pass-bg:   #dcfce7;
+      --pass-acc:  #22c55e;
+      --review-fg: #92400e;
+      --review-bg: #fef3c7;
+      --review-acc:#f59e0b;
+      --fail-fg:   #991b1b;
+      --fail-bg:   #fee2e2;
+      --fail-acc:  #ef4444;
+      --err-fg:    #1e3a5f;
+      --err-bg:    #dbeafe;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; padding: 48px 16px; }
+    .header { max-width: 680px; margin: 0 auto 40px; display: flex; align-items: baseline; gap: 14px; border-bottom: 2px solid var(--ink); padding-bottom: 16px; }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 28px; letter-spacing: -0.5px; }
+    .logo span { color: var(--red); }
+    .tagline { font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .card { max-width: 680px; margin: 0 auto; background: white; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; box-shadow: 0 2px 24px rgba(0,0,0,0.06); }
+    .card-head { padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; }
+    .card-head h1 { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; }
+    .status-pill { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 14px; border-radius: 999px; }
+    .theme-pass   { background: var(--pass-bg);   color: var(--pass-fg); }
+    .theme-review { background: var(--review-bg); color: var(--review-fg); }
+    .theme-fail   { background: var(--fail-bg);   color: var(--fail-fg); }
+    .theme-error  { background: var(--err-bg);    color: var(--err-fg); }
+    .card-body { padding: 28px; }
+    .section { margin-top: 24px; }
+    .section:first-child { margin-top: 0; }
+    .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .meta-grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 14px; }
+    .meta-grid dt { color: var(--muted); font-weight: 500; white-space: nowrap; }
+    .meta-grid dd { font-weight: 500; word-break: break-all; }
+    .conf-row { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+    .conf-bar-bg { flex: 1; height: 8px; background: var(--cream); border-radius: 99px; overflow: hidden; }
+    .conf-bar-fill { height: 100%; border-radius: 99px; }
+    .conf-pct { font-size: 14px; font-weight: 700; min-width: 36px; text-align: right; }
+    .conf-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    .issues-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .issues-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; padding: 10px 12px; background: var(--review-bg); border-left: 3px solid var(--review-acc); border-radius: 0 3px 3px 0; }
+    .no-issues { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--pass-fg); padding: 12px; background: var(--pass-bg); border-radius: 3px; }
+    .fix-box { background: var(--cream); border: 1px solid var(--border); border-radius: 3px; padding: 14px 16px; font-size: 14px; line-height: 1.6; color: var(--ink); }
+    .integration-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .int-pill { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 3px; border: 1px solid var(--border); background: var(--paper); }
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-ok   { background: var(--pass-acc); }
+    .dot-skip { background: var(--border); }
+    .dot-err  { background: var(--fail-acc); }
+    .error-panel { padding: 20px; background: var(--err-bg); border-left: 4px solid #3b82f6; border-radius: 0 3px 3px 0; font-size: 14px; line-height: 1.6; }
+    .error-panel strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 28px; color: var(--red); font-size: 14px; font-weight: 600; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+    .footer { max-width: 680px; margin: 24px auto 0; font-size: 12px; color: var(--muted); text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">Book<span>Leaf</span></div>
+    <div class="tagline">Cover Validation System</div>
+  </div>
+
+  <div class="card">
+
+    {% if error %}
+
+      <div class="card-head theme-error">
+        <h1>Validation Result</h1>
+        <span class="status-pill theme-error">Error</span>
+      </div>
+      <div class="card-body">
+        <div class="error-panel">
+          <strong>Something went wrong</strong>
+          {{ error }}
+        </div>
+        <a class="back-link" href="{{ url_for('index') }}">← Try another cover</a>
+      </div>
+
+    {% else %}
+
+      <!-- FIX: inline conditionals used directly in attributes instead of set blocks -->
+
+      <div class="card-head {% if status == 'PASS' %}theme-pass{% elif status == 'REVIEW NEEDED' %}theme-review{% else %}theme-fail{% endif %}">
+        <h1>Validation Result</h1>
+        <span class="status-pill {% if status == 'PASS' %}theme-pass{% elif status == 'REVIEW NEEDED' %}theme-review{% else %}theme-fail{% endif %}">
+          {% if status == 'PASS' %}✅{% elif status == 'REVIEW NEEDED' %}⚠️{% else %}❌{% endif %}
+          {{ status }}
+        </span>
+      </div>
+
+      <div class="card-body">
+
+        <!-- Cover metadata -->
+        <div class="section">
+          <div class="section-label">Cover details</div>
+          <dl class="meta-grid">
+            <dt>File</dt>   <dd>{{ filename }}</dd>
+            <dt>ISBN</dt>   <dd>{{ isbn }}</dd>
+            <dt>Author</dt> <dd>{{ author_name }}{% if author_email %} · {{ author_email }}{% endif %}</dd>
+          </dl>
+        </div>
+
+        <!-- Confidence bar -->
+        <div class="section">
+          <div class="section-label">AI confidence</div>
+          <div class="conf-label">Detection certainty</div>
+          <div class="conf-row">
+            <div class="conf-bar-bg">
+              <div class="conf-bar-fill" style="width: {{ confidence }}%; background: {% if status == 'PASS' %}var(--pass-acc){% elif status == 'REVIEW NEEDED' %}var(--review-acc){% else %}var(--fail-acc){% endif %};"></div>
+            </div>
+            <div class="conf-pct">{{ confidence }}%</div>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-top:6px">
+            Badge overlap detected: <strong>{{ badge_overlap }}</strong>
+          </p>
+        </div>
+
+        <!-- Issues -->
+        <div class="section">
+          <div class="section-label">Issues found</div>
+          {% if issues %}
+            <ul class="issues-list">
+              {% for issue in issues %}
+                <li><span>⚠</span><span>{{ issue }}</span></li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="no-issues">✅ No issues found — cover meets all BookLeaf standards.</div>
+          {% endif %}
+        </div>
+
+        <!-- How to fix -->
+        {% if status != 'PASS' and correction and correction != 'No action needed' and correction != 'No instructions provided.' %}
+        <div class="section">
+          <div class="section-label">How to fix</div>
+          <div class="fix-box">{{ correction }}</div>
+        </div>
+        {% endif %}
+
+        <!-- Integrations -->
+        <div class="section">
+          <div class="section-label">Integrations</div>
+          <div class="integration-row">
+
+            {% if airtable_status == 'Created' %}
+              <div class="int-pill"><div class="dot dot-ok"></div> Airtable — Record created</div>
+            {% elif airtable_status and 'Error' in airtable_status %}
+              <div class="int-pill"><div class="dot dot-err"></div> Airtable — {{ airtable_status }}</div>
+            {% elif airtable_status == 'Failed' %}
+              <div class="int-pill"><div class="dot dot-err"></div> Airtable — Failed</div>
+            {% else %}
+              <div class="int-pill"><div class="dot dot-skip"></div> Airtable — Skipped</div>
+            {% endif %}
+
+            {% if email_status == 'Sent' %}
+              <div class="int-pill"><div class="dot dot-ok"></div> Email — Sent</div>
+            {% elif email_status and 'Error' in email_status %}
+              <div class="int-pill"><div class="dot dot-err"></div> Email — {{ email_status }}</div>
+            {% elif email_status and 'Skipped' in email_status %}
+              <div class="int-pill"><div class="dot dot-skip"></div> Email — {{ email_status }}</div>
+            {% else %}
+              <div class="int-pill"><div class="dot dot-skip"></div> Email — Skipped</div>
+            {% endif %}
+
+          </div>
+        </div>
+
+        <a class="back-link" href="{{ url_for('index') }}">← Validate another cover</a>
+
+      </div>
+    {% endif %}
+
+  </div>
+
+  <div class="footer">BookLeaf Publishing · Automated Cover Validation · India | USA | UK</div>
+
+</body>
+</html>
