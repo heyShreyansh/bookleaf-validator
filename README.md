@@ -31,7 +31,7 @@ Automated AI-powered book cover validation system for BookLeaf Publishing.
 4. Run: `python app.py`
 5. Open: `http://127.0.0.1:5000`
 
-##Interface
+- Interface
 
 <img width="549" height="689" alt="Screenshot 2026-05-24 at 13 47 43" src="https://github.com/user-attachments/assets/74c9c831-3b87-4222-9c75-a0f68ca47b34" />
 
