@@ -31,16 +31,19 @@ Automated AI-powered book cover validation system for BookLeaf Publishing.
 4. Run: `python app.py`
 5. Open: `http://127.0.0.1:5000`
 
-#Interface
+##Interface
+
 <img width="549" height="689" alt="Screenshot 2026-05-24 at 13 47 43" src="https://github.com/user-attachments/assets/74c9c831-3b87-4222-9c75-a0f68ca47b34" />
 
 ## Results
 - Detection accuracy: 95%+ confidence
 - Processes 8 covers with full Airtable + email automation
 - Zero manual intervention required for clear pass/fail cases
-- Pass
+- Pass & Review Needed 
+
 <img width="554" height="562" alt="Screenshot 2026-05-24 at 13 48 09" src="https://github.com/user-attachments/assets/f4a43439-edae-4174-ba92-350c2b453b48" />
-- Review Needed 
+
+
 <img width="578" height="735" alt="Screenshot 2026-05-24 at 13 47 37" src="https://github.com/user-attachments/assets/91fb89f9-4b14-4d57-92d6-d2b67ec59aae" />
 
 
