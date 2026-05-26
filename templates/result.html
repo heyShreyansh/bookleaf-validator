@@ -153,6 +153,25 @@
         </div>
         {% endif %}
 
+                {% if annotated_image_url %}
+        <div class="section">
+          <div class="section-label">Visual analysis — ML detection</div>
+          <img src="{{ annotated_image_url }}"
+               style="width:100%;border-radius:4px;border:1px solid var(--border);"
+               alt="ML annotated cover">
+          <div style="display:flex;gap:16px;margin-top:8px;font-size:12px;color:var(--muted);flex-wrap:wrap;">
+            <span>Badge zone</span>
+            <span>Safe area</span>
+            <span>Text detected</span>
+            <span>Violation</span>
+            {% if result.detection_method %}
+            <span>Detection: {{ result.detection_method }} — {{ result.processing_time_sec }}s</span>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+
         <!-- Integrations -->
         <div class="section">
           <div class="section-label">Integrations</div>

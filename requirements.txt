@@ -8,7 +8,10 @@ flask==3.1.3
 werkzeug==3.1.8          # secure_filename, file handling — was missing, Flask depends on it
 
 # --- AI vision ---
-google-genai==2.6.0      # Gemini 2.5 Flash SDK
+google-genai==2.6.0
+ultralytics==8.2.0
+easyocr==1.7.1
+opencv-python-headless==4.9.0.80
 
 # --- Image processing ---
 Pillow==12.2.0           # PIL.Image — loads PNG/JPG for Gemini

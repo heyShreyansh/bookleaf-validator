@@ -85,9 +85,9 @@ def analyze_with_retry(image_path, max_retries=3):
                 print(f"  Server busy, waiting {wait_time}s... (attempt {attempt + 1}/{max_retries})")
                 time.sleep(wait_time)
             elif "429" in error_msg or "quota" in error_msg.lower():
-               
-                print(f"  Quota exhausted — switch model or wait until midnight.")
-                return None
+                wait_time = 60
+                print(f"  Rate limited, waiting {wait_time}s... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(wait_time)
             else:
                 print(f"  Unexpected error: {e}")
                 return None

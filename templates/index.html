@@ -53,6 +53,128 @@
       color: var(--muted);
     }
 
+    /* ── Email Gate Overlay ── */
+    #emailGate {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,26,0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .gate-card {
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.22);
+    }
+    .gate-head {
+      background: var(--ink);
+      color: white;
+      padding: 20px 28px;
+    }
+    .gate-head .logo {
+      font-size: 22px;
+      color: white;
+      margin-bottom: 4px;
+    }
+    .gate-head .logo span { color: var(--red); }
+    .gate-head p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+    .gate-body {
+      padding: 28px;
+    }
+    .gate-body h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      font-weight: 400;
+      margin-bottom: 6px;
+    }
+    .gate-body .gate-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .gate-body label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .gate-body input[type="email"] {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      background: white;
+      transition: border-color 0.15s;
+    }
+    .gate-body input[type="email"]:focus {
+      outline: none;
+      border-color: var(--ink);
+    }
+    .gate-body input[type="email"].error {
+      border-color: var(--red);
+    }
+    .gate-error {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 6px;
+      display: none;
+    }
+    .gate-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 13px;
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .gate-btn:hover { background: var(--red-dk); }
+    .gate-privacy {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ── Main form (blurred until gate passed) ── */
+    #mainContent {
+      filter: blur(3px);
+      pointer-events: none;
+      user-select: none;
+      transition: filter 0.3s ease;
+    }
+    #mainContent.unlocked {
+      filter: none;
+      pointer-events: auto;
+      user-select: auto;
+    }
+
     /* ── Card ── */
     .card {
       max-width: 680px;
@@ -88,6 +210,30 @@
       text-transform: uppercase;
     }
     .card-body { padding: 28px; }
+
+    /* ── Submitter email display strip ── */
+    #emailStrip {
+      display: none;
+      background: var(--pass-bg);
+      border-bottom: 1px solid #c3e6d0;
+      padding: 10px 28px;
+      font-size: 13px;
+      color: var(--pass);
+      align-items: center;
+      gap: 8px;
+    }
+    #emailStrip.show { display: flex; }
+    #emailStrip strong { font-weight: 600; }
+    #emailStrip button {
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: 'DM Sans', sans-serif;
+    }
 
     /* ── Section dividers ── */
     .section { margin-top: 28px; }
@@ -207,7 +353,6 @@
     }
     .meta-grid .full { grid-column: 1 / -1; }
 
-    /* Disabled overlay for metadata when sample is selected */
     .meta-section { transition: opacity 0.2s; }
     .meta-section.dimmed { opacity: 0.35; pointer-events: none; }
 
@@ -260,7 +405,6 @@
       transform: none;
     }
 
-    /* Loading state */
     .spinner {
       width: 18px; height: 18px;
       border: 2px solid rgba(255,255,255,0.3);
@@ -278,7 +422,6 @@
       line-height: 1.5;
     }
 
-    /* Footer */
     .footer {
       max-width: 680px;
       margin: 24px auto 0;
@@ -290,93 +433,126 @@
 </head>
 <body>
 
-  <div class="header">
-    <div class="logo">Book<span>Leaf</span></div>
-    <div class="tagline">Cover Validation System</div>
-  </div>
-
-  <div class="card">
-    <div class="card-head">
-      <span class="step-badge">AI Review</span>
-      <h1>Submit a Cover for Validation</h1>
-    </div>
-
-    <div class="card-body">
-      <form action="{{ url_for('validate') }}" method="post" enctype="multipart/form-data" id="validateForm">
-
-        <!-- Sample covers -->
-        <div class="section">
-          <div class="section-label">Sample covers</div>
-          <label class="field-label" for="cover_choice">
-            Choose a sample cover <span class="optional">optional</span>
-          </label>
-          <select name="cover_choice" id="cover_choice">
-            <option value="">— Select a sample cover —</option>
-            {% for cover in sample_covers %}
-              <option value="{{ cover }}">{{ cover }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="or-row">or</div>
-
-        <!-- Upload zone -->
-        <div class="section">
-          <div class="section-label">Upload your cover</div>
-          <div class="upload-zone" id="uploadZone">
-            <input type="file" name="cover_upload" id="cover_upload" accept="image/png,image/jpeg,application/pdf">
-            <div class="upload-icon">📄</div>
-            <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
-            <div class="upload-text" style="margin-top:4px">PNG, JPG or PDF · max 20 MB</div>
-            <div class="upload-filename" id="uploadFilename"></div>
-          </div>
-        </div>
-
-        <!-- Custom metadata — only relevant for uploads -->
-        <div class="section meta-section dimmed" id="metaSection">
-          <div class="section-label">Cover metadata <span style="font-size:10px;text-transform:none;letter-spacing:0">(for uploaded covers)</span></div>
-          <div class="meta-grid">
-            <div class="full">
-              <label class="field-label" for="custom_isbn">ISBN <span class="optional">optional</span></label>
-              <input type="text" name="custom_isbn" id="custom_isbn" placeholder="978-x-xxx-xxxxx-x">
-            </div>
-            <div>
-              <label class="field-label" for="custom_author_name">Author name <span class="optional">optional</span></label>
-              <input type="text" name="custom_author_name" id="custom_author_name" placeholder="Author Name">
-            </div>
-            <div>
-              <label class="field-label" for="custom_author_email">Author email <span class="optional">optional</span></label>
-              <input type="email" name="custom_author_email" id="custom_author_email" placeholder="author@example.com">
-            </div>
-          </div>
-          <p class="note">Metadata is pre-filled automatically for sample covers from the ISBN database.</p>
-        </div>
-
-        <!-- Actions -->
-        <div class="section">
-          <div class="section-label">Post-validation actions</div>
-          <div class="check-row">
-            <label class="check-label">
-              <input type="checkbox" name="create_airtable" checked>
-              Log to Airtable
-            </label>
-            <label class="check-label">
-              <input type="checkbox" name="send_email" checked>
-              Email author
-            </label>
-          </div>
-        </div>
-
-        <button type="submit" class="submit-btn" id="submitBtn">
-          <span class="spinner" id="spinner"></span>
-          <span id="btnText">Validate Cover</span>
-        </button>
-
-      </form>
+  <!-- ── Email Gate Overlay ── -->
+  <div id="emailGate">
+    <div class="gate-card">
+      <div class="gate-head">
+        <div class="logo">Book<span>Leaf</span></div>
+        <p>Cover Validation System</p>
+      </div>
+      <div class="gate-body">
+        <h2>Enter your email to continue</h2>
+        <p class="gate-sub">We'll send your validation report to this address once the review is complete.</p>
+        <label for="gateEmail">Your email address</label>
+        <input type="email" id="gateEmail" placeholder="you@example.com" autocomplete="email" autofocus>
+        <div class="gate-error" id="gateError">Please enter a valid email address.</div>
+        <button class="gate-btn" id="gateBtn" onclick="unlockWithEmail()">Continue →</button>
+        <p class="gate-privacy"> Your email is only used to send you the validation report.</p>
+      </div>
     </div>
   </div>
 
-  <div class="footer">BookLeaf Publishing · Automated Cover Validation · India | USA | UK</div>
+  <!-- ── Main UI (blurred until gate passed) ── -->
+  <div id="mainContent">
+
+    <div class="header">
+      <div class="logo">Book<span>Leaf</span></div>
+      <div class="tagline">Cover Validation System</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="step-badge">AI Review</span>
+        <h1>Submit a Cover for Validation</h1>
+      </div>
+
+      <!-- Email strip shown after gate -->
+      <div id="emailStrip">
+         Report will be sent to <strong id="emailStripValue"></strong>
+        <button onclick="resetEmail()">Change</button>
+      </div>
+
+      <div class="card-body">
+        <form action="{{ url_for('validate') }}" method="post" enctype="multipart/form-data" id="validateForm">
+
+          <!-- Hidden field carrying the submitter email -->
+          <input type="hidden" name="submitter_email" id="submitterEmailField">
+
+          <!-- Sample covers -->
+          <div class="section">
+            <div class="section-label">Sample covers</div>
+            <label class="field-label" for="cover_choice">
+              Choose a sample cover <span class="optional">optional</span>
+            </label>
+            <select name="cover_choice" id="cover_choice">
+              <option value="">— Select a sample cover —</option>
+              {% for cover in sample_covers %}
+                <option value="{{ cover }}">{{ cover }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="or-row">or</div>
+
+          <!-- Upload zone -->
+          <div class="section">
+            <div class="section-label">Upload your cover</div>
+            <div class="upload-zone" id="uploadZone">
+              <input type="file" name="cover_upload" id="cover_upload" accept="image/png,image/jpeg,application/pdf">
+              <div class="upload-icon"></div>
+              <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
+              <div class="upload-text" style="margin-top:4px">PNG, JPG or PDF · max 20 MB</div>
+              <div class="upload-filename" id="uploadFilename"></div>
+            </div>
+          </div>
+
+          <!-- Custom metadata -->
+          <div class="section meta-section dimmed" id="metaSection">
+            <div class="section-label">Cover metadata <span style="font-size:10px;text-transform:none;letter-spacing:0">(for uploaded covers)</span></div>
+            <div class="meta-grid">
+              <div class="full">
+                <label class="field-label" for="custom_isbn">ISBN <span class="optional">optional</span></label>
+                <input type="text" name="custom_isbn" id="custom_isbn" placeholder="978-x-xxx-xxxxx-x">
+              </div>
+              <div>
+                <label class="field-label" for="custom_author_name">Author name <span class="optional">optional</span></label>
+                <input type="text" name="custom_author_name" id="custom_author_name" placeholder="Author Name">
+              </div>
+              <div>
+                <label class="field-label" for="custom_author_email">Author email <span class="optional">optional</span></label>
+                <input type="email" name="custom_author_email" id="custom_author_email" placeholder="author@example.com">
+              </div>
+            </div>
+            <p class="note">Metadata is pre-filled automatically for sample covers from the ISBN database.</p>
+          </div>
+
+          <!-- Actions -->
+          <div class="section">
+            <div class="section-label">Post-validation actions</div>
+            <div class="check-row">
+              <label class="check-label">
+                <input type="checkbox" name="create_airtable" checked>
+                Log to Airtable
+              </label>
+              <label class="check-label">
+                <input type="checkbox" name="send_email" checked>
+                Email author
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <span class="spinner" id="spinner"></span>
+            <span id="btnText">Validate Cover</span>
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+    <div class="footer">BookLeaf Publishing · Automated Cover Validation · India | USA | UK</div>
+
+  </div><!-- /mainContent -->
 
   <script>
     const coverChoice  = document.getElementById('cover_choice');
@@ -388,7 +564,50 @@
     const spinner      = document.getElementById('spinner');
     const btnText      = document.getElementById('btnText');
 
-    // When sample selected → clear upload, dim metadata
+    /* ── Email gate logic ── */
+    function unlockWithEmail() {
+      const input = document.getElementById('gateEmail');
+      const errorEl = document.getElementById('gateError');
+      const email = input.value.trim();
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if (!valid) {
+        input.classList.add('error');
+        errorEl.style.display = 'block';
+        input.focus();
+        return;
+      }
+
+      // Store email in hidden field and strip
+      document.getElementById('submitterEmailField').value = email;
+      document.getElementById('emailStripValue').textContent = email;
+      document.getElementById('emailStrip').classList.add('show');
+
+      // Hide gate, unlock content
+      document.getElementById('emailGate').style.display = 'none';
+      document.getElementById('mainContent').classList.add('unlocked');
+    }
+
+    function resetEmail() {
+      document.getElementById('emailGate').style.display = 'flex';
+      document.getElementById('mainContent').classList.remove('unlocked');
+      document.getElementById('emailStrip').classList.remove('show');
+      document.getElementById('gateEmail').value = '';
+      document.getElementById('gateEmail').classList.remove('error');
+      document.getElementById('gateError').style.display = 'none';
+      document.getElementById('submitterEmailField').value = '';
+    }
+
+    // Allow pressing Enter in the gate email field
+    document.getElementById('gateEmail').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); unlockWithEmail(); }
+    });
+    document.getElementById('gateEmail').addEventListener('input', () => {
+      document.getElementById('gateEmail').classList.remove('error');
+      document.getElementById('gateError').style.display = 'none';
+    });
+
+    /* ── Main form logic ── */
     coverChoice.addEventListener('change', () => {
       if (coverChoice.value) {
         coverUpload.value = '';
@@ -398,7 +617,6 @@
       }
     });
 
-    // When file chosen → clear sample, reveal metadata
     coverUpload.addEventListener('change', () => {
       if (coverUpload.files.length > 0) {
         coverChoice.value = '';
@@ -409,7 +627,6 @@
       }
     });
 
-    // Drag-and-drop highlight
     uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
     uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
     uploadZone.addEventListener('drop', e => {
@@ -421,7 +638,6 @@
       }
     });
 
-    // Loading state on submit + basic validation
     document.getElementById('validateForm').addEventListener('submit', e => {
       const hasSample = coverChoice.value.trim() !== '';
       const hasUpload = coverUpload.files.length > 0;

@@ -51,7 +51,7 @@ COVER_ISBN_MAP = {
     "cover3.png": "9789373147499",   # Shabd v2      — Parisha Shodhan  ← FIXED
     "cover4.png": "9789898652364",   # Echoes v1     — Benny James SDB
     "cover5.png": "9789373147994",   # Echoes v2     — Benny James SDB
-    "cover6.png": "9789898652753",   # Offline Sorrows — Pulak Das
+    "cover6.png": "9789373147765",   # Inner Mirror v2 — Pratik Kolekar
     "cover7.png": "9789373147499",   # Shabd v3      — Parisha Shodhan
     "cover8.png": "9789373145068",   # Tainted By Emotion — Ojal Jain
 }
@@ -107,7 +107,7 @@ Respond ONLY in this exact JSON format with no extra text or markdown:
 }}"""
 
     response = client.models.generate_content(
-        model_name = "gemini-2.5-flash-lite",
+        model="gemini-2.5-flash-lite",
         contents=[prompt, image]
     )
 
