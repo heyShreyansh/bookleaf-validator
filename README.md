@@ -1,6 +1,7 @@
 # BookLeaf Cover Validation System
 
 Automated AI-powered book cover validation system for BookLeaf Publishing.
+https://bookleaf-validator-adue.onrender.com
 
 ## What it does
 - Detects author names overlapping the award badge zone using Google Gemini AI
